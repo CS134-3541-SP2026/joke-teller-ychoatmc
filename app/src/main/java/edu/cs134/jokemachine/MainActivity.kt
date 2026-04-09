@@ -83,6 +83,29 @@ class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
         setContent {
             var jokeText by remember { mutableStateOf("Press the button and ask for a joke!") }
             var loading by remember { mutableStateOf(false) }
+            val coroutineScope = rememberCoroutineScope()
+
+            fun fetchAndSpeakJoke(currentText: String, updateText: (String) -> Unit){
+                // launch a coroutine scope
+                // it should trigger the loading circle (loading = true)
+                // and clear the circle when done
+                // between the loading settings, fetch a joke,
+                // then update text and call speech
+                coroutineScope.launch {
+                    // stuff in our braces run on a separate thread!
+                    loading = true
+
+                    fetchJoke(
+                        onLoadingChange = { loading = it },
+                        callback = { joke ->
+                            updateText(joke)
+                        }
+                    )
+
+                    loading = false
+                }
+            }
+
             val permissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission()
             ) { isGranted ->
@@ -122,6 +145,11 @@ class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
             ) {
                 Text(text = jokeText, modifier = Modifier.padding(bottom = 24.dp))
                 Button(onClick = {
+                    fetchAndSpeakJoke("Fetching Joke",{joke3 -> jokeText = joke3})
+                }) {Text("Test Joke") }
+
+                /**
+                Button(onClick = {
                     if (!SpeechRecognizer.isRecognitionAvailable(this@MainActivity)) return@Button
                     val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                         putExtra(
@@ -133,7 +161,7 @@ class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
                     speechLauncher.launch(intent)
                 }) {
                     Text("Talk")
-                }
+                }*/
                 if (loading) CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
             }
         }
