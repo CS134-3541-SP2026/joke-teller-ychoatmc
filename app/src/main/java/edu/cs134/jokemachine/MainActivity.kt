@@ -26,6 +26,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 
 class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
+    // use a lateinit so we can instantiate it later
     private lateinit var tts: TextToSpeech
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://official-joke-api.appspot.com/")
@@ -148,7 +149,7 @@ class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
                     fetchAndSpeakJoke("Fetching Joke",{joke3 -> jokeText = joke3})
                 }) {Text("Test Joke") }
 
-                /**
+
                 Button(onClick = {
                     if (!SpeechRecognizer.isRecognitionAvailable(this@MainActivity)) return@Button
                     val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
@@ -161,7 +162,7 @@ class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
                     speechLauncher.launch(intent)
                 }) {
                     Text("Talk")
-                }*/
+                }
                 if (loading) CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
             }
         }
